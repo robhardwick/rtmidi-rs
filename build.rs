@@ -5,11 +5,22 @@ fn main() {
     println!("cargo:rustc-link-lib=rtmidi");
     println!("cargo:rerun-if-changed=wrapper.h");
 
-    let include_args = match pkg_config::Config::new().statik(false).atleast_version("4.0.0").probe("rtmidi") {
+    let include_args = match pkg_config::Config::new()
+        .statik(false)
+        .atleast_version("4.0.0")
+        .probe("rtmidi")
+    {
         Err(_) => vec![],
-        Ok(library) => library.include_paths.iter().map(|include_path| {
-            format!("-I{}", include_path.to_str().expect("include path was not UTF-8"))
-        }).collect::<Vec<_>>(),
+        Ok(library) => library
+            .include_paths
+            .iter()
+            .map(|include_path| {
+                format!(
+                    "-I{}",
+                    include_path.to_str().expect("include path was not UTF-8")
+                )
+            })
+            .collect::<Vec<_>>(),
     };
 
     let bindings = bindgen::Builder::default()

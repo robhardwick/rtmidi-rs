@@ -62,7 +62,6 @@
 //! timing functionality is provided.
 //!
 //! ```
-//! use std::process::exit;
 //! use std::thread::sleep;
 //! use std::time::Duration;
 //! use rtmidi::{RtMidiOut, RtMidiError};
@@ -75,7 +74,7 @@
 //!     let ports = output.port_count()?;
 //!     if ports < 1 {
 //!         eprintln!("No ports available!");
-//!         exit(1);
+//!         return Ok(());
 //!     }
 //!
 //!     // Open first available port
@@ -116,7 +115,6 @@
 //! it is empty (after the callback is set).
 //!
 //! ```
-//! use std::process::exit;
 //! use std::io::{stdin, Read};
 //! use rtmidi::{RtMidiIn, RtMidiError};
 //!
@@ -128,7 +126,7 @@
 //!     let ports = input.port_count()?;
 //!     if ports < 1 {
 //!         eprintln!("No ports available!");
-//!         exit(1);
+//!         return Ok(());
 //!     }
 //!
 //!     // Open first available port
