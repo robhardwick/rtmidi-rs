@@ -157,11 +157,21 @@ mod tests {
     }
 
     #[test]
+    #[cfg(not(target_os = "linux"))]
     fn open_port() {
         assert!(RtMidiOut::new(Default::default())
             .unwrap()
             .open_port(9999, "Test")
             .is_err());
+    }
+
+    #[test]
+    #[cfg(target_os = "linux")]
+    fn open_port() {
+        assert!(RtMidiOut::new(Default::default())
+            .unwrap()
+            .open_port(9999, "Test")
+            .is_ok());
     }
 
     #[test]

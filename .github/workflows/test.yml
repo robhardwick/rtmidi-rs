@@ -51,8 +51,33 @@ jobs:
         with:
           command: check
 
-  test:
-    name: Test
+  test_linux:
+    name: Test Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - run: sudo apt-get -qq install jackd2 libjack-jackd2-dev
+      - run: jackd -R -d dummy &
+      - run: |
+          wget http://www.music.mcgill.ca/~gary/rtmidi/release/rtmidi-4.0.0.tar.gz -O /tmp/rtmidi.tar.gz
+          tar -xf /tmp/rtmidi.tar.gz -C /tmp
+          cd /tmp/rtmidi-4.0.0
+          ./configure --with-jack
+          make
+          sudo make install
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+        env:
+          LD_LIBRARY_PATH: /usr/local/lib
+
+  test_macos:
+    name: Test macOS
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
