@@ -1,5 +1,4 @@
 use std::ffi::{c_void, CString};
-use std::slice;
 
 use crate::api::RtMidiApi;
 use crate::error::RtMidiError;
@@ -138,29 +137,11 @@ impl RtMidiIn {
     /// While not absolutely necessary, it is best to set the callback function before opening a
     /// MIDI port to avoid leaving some messages in the queue.
     pub fn set_callback<F: Fn(f64, &[u8])>(&self, callback: F) -> Result<(), RtMidiError> {
-        let (callback, user_data) = Self::create_callback(callback);
+        let (callback, user_data) = ffi::create_callback(callback);
         unsafe {
             ffi::rtmidi_in_set_callback(self.0, Some(callback), user_data as *mut c_void);
             (*self.0).into()
         }
-    }
-
-    fn create_callback<F: Fn(f64, &[u8])>(
-        f: F,
-    ) -> (
-        unsafe extern "C" fn(f64, *const u8, u64, *mut c_void),
-        *mut F,
-    ) {
-        unsafe extern "C" fn trampoline<F: Fn(f64, &[u8])>(
-            t: f64,
-            d: *const u8,
-            s: u64,
-            f: *mut c_void,
-        ) {
-            let messages = slice::from_raw_parts(d, s as usize);
-            (*(f as *mut F))(t, messages)
-        }
-        (trampoline::<F>, Box::into_raw(Box::new(f)))
     }
 
     /// Cancel use of the current callback function (if one exists).

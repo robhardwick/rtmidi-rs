@@ -30,7 +30,7 @@ jobs:
           toolchain: stable
           override: true
       - run: rustup component add clippy
-      - uses: ./.github/actions/install-ubuntu
+      - run: sudo apt-get -qq install librtmidi-dev
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
@@ -46,7 +46,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - uses: ./.github/actions/install-ubuntu
+      - run: sudo apt-get -qq install librtmidi-dev
       - uses: actions-rs/cargo@v1
         with:
           command: check
