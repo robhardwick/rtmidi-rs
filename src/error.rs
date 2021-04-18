@@ -16,9 +16,12 @@ impl From<ffi::RtMidiWrapper> for Result<(), RtMidiError> {
     fn from(e: ffi::RtMidiWrapper) -> Self {
         if e.ok {
             Ok(())
+        } else if e.msg.is_null() {
+            Err(RtMidiError::Error("Invalid error".to_string()))
+        } else if let Ok(message) = unsafe { CStr::from_ptr(e.msg) }.to_str() {
+            Err(RtMidiError::Error(message.to_string()))
         } else {
-            let message = unsafe { CStr::from_ptr(e.msg) };
-            Err(RtMidiError::Error(message.to_str()?.to_string()))
+            Err(RtMidiError::Error("Unknown error".to_string()))
         }
     }
 }
